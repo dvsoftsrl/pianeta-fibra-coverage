@@ -38,8 +38,8 @@ it('returns the best profile based on download and upload Mbps', function () {
 
     $bestProfile = $coverageResult->bestProfile();
 
-    expect($bestProfile)->toBeInstanceOf(CoverageProfile::class);
-    expect($bestProfile->type)->toBe('500/100');
+    expect($bestProfile)->toBeInstanceOf(CoverageProfile::class)
+        ->and($bestProfile?->type)->toBe('500/100');
 });
 
 it('returns null if there are no profiles when calling bestProfile()', function () {

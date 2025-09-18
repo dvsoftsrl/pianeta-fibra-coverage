@@ -23,6 +23,7 @@
         "illuminate/http": "^10.0||^11.0||^12.0"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest",
         "laravel/pint": "^1.14",
         "nunomaduro/collision": "^8.8",
         "larastan/larastan": "^3.0",
@@ -37,14 +38,12 @@
     },
     "autoload": {
         "psr-4": {
-            "DvSoft\\PianetaFibraCoverage\\": "src/",
-            "DvSoft\\PianetaFibraCoverage\\Database\\Factories\\": "database/factories/"
+            "DvSoft\\PianetaFibraCoverage\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "DvSoft\\PianetaFibraCoverage\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "DvSoft\\PianetaFibraCoverage\\Tests\\": "tests/"
         }
     },
     "scripts": {

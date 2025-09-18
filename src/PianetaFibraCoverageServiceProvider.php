@@ -2,8 +2,6 @@
 
 namespace DvSoft\PianetaFibraCoverage;
 
-use DvSoft\PianetaFibraCoverage\Support\LaravelCacheAdapter;
-use GuzzleHttp\Client as GuzzleClient;
 use Psr\Log\LoggerInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -29,10 +27,6 @@ class PianetaFibraCoverageServiceProvider extends PackageServiceProvider
             $cfg = config('pianeta-fibra-coverage');
 
             $token = (string)($cfg['token'] ?? '');
-
-            if ($token === '') {
-                // Permettiamo l'istanza ma la prima chiamata darà eccezione AuthException se il token manca
-            }
 
             // Logger opzionale
             $logger = $app->has(LoggerInterface::class) ? $app->make(LoggerInterface::class) : null;
