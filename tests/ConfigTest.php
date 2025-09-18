@@ -1,4 +1,5 @@
 <?php
+
 it('loads the default configuration', function () {
     $config = config('pianeta-fibra-coverage');
 

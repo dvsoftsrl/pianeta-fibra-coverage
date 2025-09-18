@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
+
 namespace DvSoft\PianetaFibraCoverage\DTO;
-use function usort;
 
 final class CoverageProfile
 {
@@ -15,6 +16,7 @@ final class CoverageProfile
         if (preg_match('/^(\d+)\/(\d+)$/', $this->type, $matches)) {
             return (int) $matches[1];
         }
+
         return null;
     }
 
@@ -23,6 +25,7 @@ final class CoverageProfile
         if (preg_match('/^(\d+)\/(\d+)$/', $this->type, $matches)) {
             return (int) $matches[2];
         }
+
         return null;
     }
 }

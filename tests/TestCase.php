@@ -2,9 +2,9 @@
 
 namespace DvSoft\PianetaFibraCoverage\Tests;
 
+use DvSoft\PianetaFibraCoverage\PianetaFibraCoverageServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use DvSoft\PianetaFibraCoverage\PianetaFibraCoverageServiceProvider;
 
 class TestCase extends Orchestra
 {

@@ -20,6 +20,7 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
 use function array_filter;
 
@@ -79,6 +80,7 @@ class PianetaFibraCoverage
     {
         $payload = ['endpoint' => 'city', 'city' => $city];
         $cacheKey = $this->key('city', $city);
+
         return $this->getOrFetch($cacheKey, fn() => $this->mapCityList($this->request($payload)), $useCache);
     }
 
@@ -116,6 +118,7 @@ class PianetaFibraCoverage
                 region: Arr::get($row, 'DSXOBJREG'),
             );
         }
+
         return $out;
     }
 
@@ -130,8 +133,8 @@ class PianetaFibraCoverage
                 ->throw()
                 ->get($this->baseUri, $payload);
 
-
             $this->logger?->debug('PF API response', ['payload' => $payload, 'status' => $response->status()]);
+
             return $response->json();
         } catch (RequestException $e) {
 
@@ -165,15 +168,17 @@ class PianetaFibraCoverage
         if (count($exact) === 1) {
             return $exact[0];
         }
+
         return null;
     }
 
     private function normalize(string $s): string
     {
-        $s = trim($s);
-        $s = preg_replace('/\s+/', ' ', $s);
-        $s = str_replace("'", '', $s);
-        return mb_strtolower($s);
+        return (string)Str::of($s)
+            ->trim()
+            ->replaceMatches('/\s+/', ' ')
+            ->replace("'", '')
+            ->lower();
     }
 
     /** @return StreetMatch[] */
@@ -181,6 +186,7 @@ class PianetaFibraCoverage
     {
         $payload = ['endpoint' => 'address', 'id_city' => $egonCityId, 'street' => $street];
         $cacheKey = $this->key('street', (string)$egonCityId, $street);
+
         return $this->getOrFetch($cacheKey, fn() => $this->mapStreetList($this->request($payload)), $useCache);
     }
 
@@ -196,6 +202,7 @@ class PianetaFibraCoverage
                 label: Arr::get($row, 'DSXOBJSTR', ''),
             );
         }
+
         return $out;
     }
 
@@ -204,6 +211,7 @@ class PianetaFibraCoverage
     {
         $payload = ['endpoint' => 'housenumber', 'id_street' => $egonStreetId, 'num' => $num];
         $cacheKey = $this->key('hnum', (string)$egonStreetId, $num);
+
         return $this->getOrFetch($cacheKey, fn() => $this->mapHouseNumberList($this->request($payload)), $useCache);
     }
 
@@ -220,6 +228,7 @@ class PianetaFibraCoverage
                 description: Arr::get($row, 'DSXESP'),
             );
         }
+
         return Arr::sort($out, 'description');
     }
 
@@ -239,10 +248,10 @@ class PianetaFibraCoverage
         ];
 
         $data = $this->request($payload);
+
         return $this->mapCoverage($data);
     }
 
-    /** @param array $data */
     private function mapCoverage(array $data): CoverageResult
     {
         $isAvailable = (bool)($data['IsAvailable'] ?? $data['available'] ?? false);

@@ -20,13 +20,12 @@ class PianetaFibraCoverageServiceProvider extends PackageServiceProvider
             ->hasConfigFile();
     }
 
-
     public function packageRegistered(): void
     {
         $this->app->singleton(PianetaFibraCoverage::class, function ($app) {
             $cfg = config('pianeta-fibra-coverage');
 
-            $token = (string)($cfg['token'] ?? '');
+            $token = (string) ($cfg['token'] ?? '');
 
             // Logger opzionale
             $logger = $app->has(LoggerInterface::class) ? $app->make(LoggerInterface::class) : null;

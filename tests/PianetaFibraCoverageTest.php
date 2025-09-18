@@ -40,11 +40,10 @@ it('search street', function () {
             'STR_AREA_OUT' => [
                 'STR' => [
                     ['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma'],
-                ]
-            ]
-        ])
+                ],
+            ],
+        ]),
     ]);
-
 
     $streets = PianetaFibraCoverage::searchStreets('1111', 'Via Roma');
 
@@ -53,7 +52,7 @@ it('search street', function () {
         ->and($streets[0])
         ->toMatchArray([
             'egonStreetId' => 1,
-            'label' => 'Via Roma'
+            'label' => 'Via Roma',
         ])
         ->and($streets[0]->label())->toBe('Via Roma');
 });
@@ -64,11 +63,10 @@ it('search house number', function () {
             'CIV_AREA_OUT' => [
                 'CIV' => [
                     ['CDPOBJCIV' => ['lValue' => 1], 'NRPNUMCIV' => ['lValue' => '50'], 'DSXESP' => ''],
-                ]
-            ]
-        ])
+                ],
+            ],
+        ]),
     ]);
-
 
     $streets = PianetaFibraCoverage::searchHouseNumbers('1111', '50');
 
@@ -78,7 +76,7 @@ it('search house number', function () {
         ->toMatchArray([
             'egonHouseNumberId' => 1,
             'label' => '50',
-            'description' => ''
+            'description' => '',
         ])
         ->and($streets[0]->label())->toBe('50');
 });
@@ -92,22 +90,22 @@ it('resolve coverage from location', function (bool $matchOrFail) {
                 'CNL_AREA_OUT' => [
                     'CNL' => [
                         ['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'STR_AREA_OUT' => [
                     'STR' => [
                         ['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'CIV_AREA_OUT' => [
                     'CIV' => [
                         ['CDPOBJCIV' => ['lValue' => 1], 'NRPNUMCIV' => ['lValue' => '12'], 'DSXESP' => ''],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'IsAvailable' => true,
@@ -115,11 +113,10 @@ it('resolve coverage from location', function (bool $matchOrFail) {
                 'Coverage' => [
                     ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
                     ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
-                ]
+                ],
             ])
-            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)) // Default se supera il limite massimo di retry
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
     ]);
-
 
     /** @var ResolveOutcome $outcome */
     $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, $matchOrFail);
@@ -155,22 +152,22 @@ it('fail with ambiguous cities resolving coverage', function () {
                     'CNL' => [
                         ['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia'],
                         ['CDPOBJCNL' => ['lValue' => 5], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'STR_AREA_OUT' => [
                     'STR' => [
                         ['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'CIV_AREA_OUT' => [
                     'CIV' => [
                         ['CDPOBJCIV' => ['lValue' => 1], 'NRPNUMCIV' => ['lValue' => '12'], 'DSXESP' => ''],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'IsAvailable' => true,
@@ -178,9 +175,9 @@ it('fail with ambiguous cities resolving coverage', function () {
                 'Coverage' => [
                     ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
                     ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
-                ]
+                ],
             ])
-            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)) // Default se supera il limite massimo di retry
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
     ]);
 
     /** @var ResolveOutcome $outcome */
@@ -188,7 +185,6 @@ it('fail with ambiguous cities resolving coverage', function () {
 
     expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
 });
-
 
 it('fail with ambiguous street resolving coverage', function () {
     $location = new Location('Via Roma', '12', 'Rome', '20831', 'MB', 'Lombardia');
@@ -199,23 +195,23 @@ it('fail with ambiguous street resolving coverage', function () {
                 'CNL_AREA_OUT' => [
                     'CNL' => [
                         ['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'STR_AREA_OUT' => [
                     'STR' => [
                         ['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma'],
                         ['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'CIV_AREA_OUT' => [
                     'CIV' => [
                         ['CDPOBJCIV' => ['lValue' => 1], 'NRPNUMCIV' => ['lValue' => '12'], 'DSXESP' => ''],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'IsAvailable' => true,
@@ -223,9 +219,9 @@ it('fail with ambiguous street resolving coverage', function () {
                 'Coverage' => [
                     ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
                     ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
-                ]
+                ],
             ])
-            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)) // Default se supera il limite massimo di retry
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
     ]);
 
     /** @var ResolveOutcome $outcome */
@@ -233,8 +229,6 @@ it('fail with ambiguous street resolving coverage', function () {
 
     expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
 });
-
-
 
 it('fail with ambiguous house number resolving coverage', function () {
     $location = new Location('Via Roma', '12', 'Rome', '20831', 'MB', 'Lombardia');
@@ -245,23 +239,23 @@ it('fail with ambiguous house number resolving coverage', function () {
                 'CNL_AREA_OUT' => [
                     'CNL' => [
                         ['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'STR_AREA_OUT' => [
                     'STR' => [
                         ['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma'],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'CIV_AREA_OUT' => [
                     'CIV' => [
                         ['CDPOBJCIV' => ['lValue' => 1], 'NRPNUMCIV' => ['lValue' => '12'], 'DSXESP' => ''],
                         ['CDPOBJCIV' => ['lValue' => 1], 'NRPNUMCIV' => ['lValue' => '12'], 'DSXESP' => ''],
-                    ]
-                ]
+                    ],
+                ],
             ])
             ->push([
                 'IsAvailable' => true,
@@ -269,9 +263,9 @@ it('fail with ambiguous house number resolving coverage', function () {
                 'Coverage' => [
                     ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
                     ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
-                ]
+                ],
             ])
-            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)) // Default se supera il limite massimo di retry
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
     ]);
 
     /** @var ResolveOutcome $outcome */
@@ -319,10 +313,10 @@ it('handles retry logic correctly', function () {
                     'CNL' => [
                         [
                             'CDPOBJCNL' => ['lValue' => 1],
-                            'DSXOBJCNL' => 'Rome'
-                        ]
-                    ]
-                ]
+                            'DSXOBJCNL' => 'Rome',
+                        ],
+                    ],
+                ],
             ])
             ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
     ]);
@@ -369,8 +363,6 @@ it('fetches coverage using config-based timeout and retries', function () {
             'url' => 'https://fiber.example.com/ftth',
         ]);
 });
-
-
 
 it('throw AuthException if token error', function () {
 

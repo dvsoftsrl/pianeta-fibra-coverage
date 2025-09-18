@@ -1,6 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 namespace DvSoft\PianetaFibraCoverage\DTO;
+
 final class Location
 {
     public function __construct(

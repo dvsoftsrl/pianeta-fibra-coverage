@@ -1,6 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 namespace DvSoft\PianetaFibraCoverage\DTO;
+
 final class CityMatch implements LabeledMatch
 {
     public function __construct(
@@ -10,5 +13,9 @@ final class CityMatch implements LabeledMatch
         public readonly ?string $province = null,
         public readonly ?string $region = null,
     ) {}
-    public function label(): string { return $this->label; }
+
+    public function label(): string
+    {
+        return $this->label;
+    }
 }

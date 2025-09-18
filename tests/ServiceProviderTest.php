@@ -1,6 +1,5 @@
 <?php
 
-
 use DvSoft\PianetaFibraCoverage\PianetaFibraCoverage;
 
 it('registers the PianetaFibraCoverage singleton', function () {

@@ -1,7 +1,11 @@
 <?php
+
 declare(strict_types=1);
+
 namespace DvSoft\PianetaFibraCoverage\DTO;
+
 use DvSoft\PianetaFibraCoverage\Enums\CustomerType;
+
 final class CoverageParams
 {
     public function __construct(
