@@ -1,24 +1,15 @@
-# :package_description
+# Client PHP per API di copertura PianetaFibra
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/dvsoftsrl/pianeta-fibra-coverage.svg?style=flat-square)](https://packagist.org/packages/dvsoftsrl/pianeta-fibra-coverage)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/dvsoftsrl/pianeta-fibra-coverage/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/dvsoftsrl/pianeta-fibra-coverage/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/dvsoftsrl/pianeta-fibra-coverage/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/dvsoftsrl/pianeta-fibra-coverage/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/dvsoftsrl/pianeta-fibra-coverage.svg?style=flat-square)](https://packagist.org/packages/dvsoftsrl/pianeta-fibra-coverage)
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
 This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
 
 ## Support us
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
+[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/pianeta-fibra-coverage.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/pianeta-fibra-coverage)
 
 We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
 
@@ -29,40 +20,46 @@ We highly appreciate you sending us a postcard from your hometown, mentioning wh
 You can install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
+composer require dvsoftsrl/pianeta-fibra-coverage
 ```
 
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag=":package_slug-config"
+php artisan vendor:publish --tag="pianeta-fibra-coverage-config"
 ```
 
 This is the contents of the published config file:
 
 ```php
 return [
+    // Token API (header 'authorization: Bearer <TOKEN>')
+    'token' => env('PIANETAFIBRA_TOKEN', ''),
+
+    // Endpoint base API
+    'base_uri' => env('PIANETAFIBRA_BASE_URI', 'https://api.pianetafibra.it/v2/api.php'),
+
+    // HTTP client
+    'timeout' => env('PIANETAFIBRA_TIMEOUT', 10),
+    'max_retries' => env('PIANETAFIBRA_MAX_RETRIES', 2),
+
+    // Caching
+    'use_cache' => env('PIANETAFIBRA_USE_CACHE', true),
+    // Se valorizzato, usa questo store di cache (es. 'redis', 'file'); altrimenti usa quello di default se use_cache=true
+    'cache_store' => env('PIANETAFIBRA_CACHE_STORE', null),
+    // TTL per anagrafiche city/street/civic (secondi)
+    'cache_ttl_seconds' => env('PIANETAFIBRA_CACHE_TTL', 43200),
+
+    // Comportamento di default per la funzione totale (puoi sempre override col parametro)
+    // true => match esatto o eccezione; false => ritorna ResolveOutcome::ambiguous(...) con alternative
+    'default_match_or_fail' => env('PIANETAFIBRA_MATCH_OR_FAIL', true),
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
 ```
 
 ## Usage
 
 ```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda);
 ```
 
 ## Testing
@@ -85,7 +82,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [DV Soft srl](https://github.com/dvsoftsrl)
 - [All Contributors](../../contributors)
 
 ## License

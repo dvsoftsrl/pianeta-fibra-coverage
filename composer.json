@@ -1,24 +1,26 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "dvsoftsrl/pianeta-fibra-coverage",
+    "description": "Client PHP per API di copertura PianetaFibra",
     "keywords": [
-        ":vendor_name",
+        "DV Soft srl",
         "laravel",
-        ":package_slug"
+        "pianeta-fibra-coverage"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/dvsoftsrl/pianeta-fibra-coverage",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "DV Soft srl",
+            "email": "developers@dvsoft.it",
             "role": "Developer"
         }
     ],
     "require": {
         "php": "^8.4",
         "spatie/laravel-package-tools": "^1.16",
-        "illuminate/contracts": "^11.0||^12.0"
+        "illuminate/contracts": "^10.0||^11.0||^12.0",
+        "illuminate/cache": "^10.0||^11.0||^12.0",
+        "illuminate/http": "^10.0||^11.0||^12.0"
     },
     "require-dev": {
         "laravel/pint": "^1.14",
@@ -35,13 +37,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "DvSoft\\PianetaFibraCoverage\\": "src/",
+            "DvSoft\\PianetaFibraCoverage\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "DvSoft\\PianetaFibraCoverage\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,10 +65,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "DvSoft\\PianetaFibraCoverage\\PianetaFibraCoverageServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "PianetaFibraCoverage": "DvSoft\\PianetaFibraCoverage\\Facades\\PianetaFibraCoverage"
             }
         }
     },
