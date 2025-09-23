@@ -399,7 +399,6 @@ it('result notFound on cities when needed', function () {
     expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse()->and($outcome->alternatives)->toBeEmpty();
 });
 
-
 it('result notFound on streets when needed', function () {
     $location = new Location('Via Roma', '12', 'Rome', '20831', 'MB', 'Lombardia');
 

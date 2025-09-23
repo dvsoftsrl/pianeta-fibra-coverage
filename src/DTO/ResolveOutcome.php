@@ -8,13 +8,11 @@ final class ResolveOutcome
 {
     /** @param array<int, object> $alternatives */
     private function __construct(
-        public readonly bool            $resolved,
+        public readonly bool $resolved,
         public readonly ?CoverageResult $coverage,
-        public readonly array           $alternatives,
-        public readonly ?string         $pendingScope,
-    )
-    {
-    }
+        public readonly array $alternatives,
+        public readonly ?string $pendingScope,
+    ) {}
 
     public static function resolved(CoverageResult $c): self
     {
