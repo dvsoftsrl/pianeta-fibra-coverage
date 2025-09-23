@@ -4,10 +4,8 @@ use DvSoft\PianetaFibraCoverage\DTO\CoverageParams;
 use DvSoft\PianetaFibraCoverage\DTO\Location;
 use DvSoft\PianetaFibraCoverage\DTO\ResolveOutcome;
 use DvSoft\PianetaFibraCoverage\Enums\CustomerType;
-use DvSoft\PianetaFibraCoverage\Exceptions\AmbiguityException;
 use DvSoft\PianetaFibraCoverage\Exceptions\ApiException;
 use DvSoft\PianetaFibraCoverage\Exceptions\AuthException;
-use DvSoft\PianetaFibraCoverage\Exceptions\NotFoundException;
 use DvSoft\PianetaFibraCoverage\Facades\PianetaFibraCoverage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -181,7 +179,7 @@ it('fail with ambiguous cities resolving coverage', function () {
     ]);
 
     /** @var ResolveOutcome $outcome */
-    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, false);
+    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, true);
 
     expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
 });
@@ -225,7 +223,7 @@ it('fail with ambiguous street resolving coverage', function () {
     ]);
 
     /** @var ResolveOutcome $outcome */
-    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, false);
+    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, true);
 
     expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
 });
@@ -269,7 +267,7 @@ it('fail with ambiguous house number resolving coverage', function () {
     ]);
 
     /** @var ResolveOutcome $outcome */
-    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, false);
+    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, true);
 
     expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
 });
@@ -386,44 +384,51 @@ it('throw ApiException if error', function () {
     PianetaFibraCoverage::searchCities('Test');
 })->throws(ApiException::class);
 
-it('throw AmbiguityException when needed', function () {
-    $location = new Location('Via Roma', '12', 'Naples', '20831', 'MB', 'Lombardia');
-
-    Http::fake([
-        '*' => Http::response([
-            'CNL_AREA_OUT' => [
-                'CNL' => [
-                    ['CDPOBJCNL' => ['lValue' => 3], 'DSXOBJCNL' => 'Naples', 'CDXZIP' => '80100', 'DSXOBJDPT' => 'NA', 'DSXOBJREG' => 'Campania'],
-                    ['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Naples', 'CDXZIP' => '50100', 'DSXOBJDPT' => 'FI', 'DSXOBJREG' => 'Toscana'],
-                ],
-            ],
-        ]),
-    ]);
-
-    /** @var ResolveOutcome $outcome */
-    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda);
-
-    expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
-
-})->throws(AmbiguityException::class);
-
-it('throw NotFoundException when needed', function () {
+it('result notFound on cities when needed', function () {
     $location = new Location('Via Roma', '12', 'Rome', '20831', 'MB', 'Lombardia');
 
     Http::fake([
-        '*' => Http::response([
-            'CNL_AREA_OUT' => [
-                'CNL' => [
-                    ['CDPOBJCNL' => ['lValue' => 3], 'DSXOBJCNL' => 'Naples', 'CDXZIP' => '80100', 'DSXOBJDPT' => 'NA', 'DSXOBJREG' => 'Campania'],
-                    ['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Naples', 'CDXZIP' => '50100', 'DSXOBJDPT' => 'FI', 'DSXOBJREG' => 'Toscana'],
-                ],
-            ],
-        ]),
+        '*' => Http::sequence()
+            ->push(['CNL_AREA_OUT' => ['CNL' => []]])
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
     ]);
 
     /** @var ResolveOutcome $outcome */
-    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda);
+    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, false);
 
-    expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse();
+    expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse()->and($outcome->alternatives)->toBeEmpty();
+});
 
-})->throws(NotFoundException::class);
+
+it('result notFound on streets when needed', function () {
+    $location = new Location('Via Roma', '12', 'Rome', '20831', 'MB', 'Lombardia');
+
+    Http::fake([
+        '*' => Http::sequence()
+            ->push(['CNL_AREA_OUT' => ['CNL' => [['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia']]]])
+            ->push(['STR_AREA_OUT' => ['STR' => []]])
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
+    ]);
+
+    /** @var ResolveOutcome $outcome */
+    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, false);
+
+    expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse()->and($outcome->alternatives)->toBeEmpty();
+});
+
+it('result notFound on numbers when needed', function ($matchOrFail) {
+    $location = new Location('Via Roma', '12', 'Rome', '20831', 'MB', 'Lombardia');
+
+    Http::fake([
+        '*' => Http::sequence()
+            ->push(['CNL_AREA_OUT' => ['CNL' => [['CDPOBJCNL' => ['lValue' => 4], 'DSXOBJCNL' => 'Rome', 'CDXZIP' => '20831', 'DSXOBJDPT' => 'MB', 'DSXOBJREG' => 'Lombardia']]]])
+            ->push(['STR_AREA_OUT' => ['STR' => [['CDPOBJSTR' => ['lValue' => 1], 'DSXOBJSTR' => 'Via Roma']]]])
+            ->push(['CIV_AREA_OUT' => ['CIV' => []]])
+            ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
+    ]);
+
+    /** @var ResolveOutcome $outcome */
+    $outcome = PianetaFibraCoverage::resolveCoverageFromLocation($location, CustomerType::Azienda, $matchOrFail);
+
+    expect($outcome->alternatives)->toBeArray()->and($outcome->resolved)->toBeFalse()->and($outcome->alternatives)->toBeEmpty();
+})->with([true, false]);

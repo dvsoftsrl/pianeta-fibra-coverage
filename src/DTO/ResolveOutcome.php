@@ -8,11 +8,13 @@ final class ResolveOutcome
 {
     /** @param array<int, object> $alternatives */
     private function __construct(
-        public readonly bool $resolved,
+        public readonly bool            $resolved,
         public readonly ?CoverageResult $coverage,
-        public readonly array $alternatives,
-        public readonly ?string $pendingScope,
-    ) {}
+        public readonly array           $alternatives,
+        public readonly ?string         $pendingScope,
+    )
+    {
+    }
 
     public static function resolved(CoverageResult $c): self
     {
@@ -23,5 +25,10 @@ final class ResolveOutcome
     public static function ambiguous(string $scope, array $alternatives): self
     {
         return new self(false, null, $alternatives, $scope);
+    }
+
+    public static function notFound(string $scope): self
+    {
+        return new self(false, null, [], $scope);
     }
 }

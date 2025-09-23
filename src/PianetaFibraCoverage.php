@@ -42,21 +42,30 @@ class PianetaFibraCoverage
     {
         $matchOrFail ??= config('pianeta-fibra-coverage.default_match_or_fail', true);
         $cities = $this->searchCities($loc->city);
-        $city = $this->selectOne($loc->city, $cities, $matchOrFail, 'city');
-        if ($city === null) {
+        try {
+            $city = $this->selectOne($loc->city, $cities, $matchOrFail, 'city');
+        } catch (AmbiguityException $e) {
             return ResolveOutcome::ambiguous('city', $cities);
+        } catch (NotFoundException $e) {
+            return ResolveOutcome::notFound('city');
         }
 
         $streets = $this->searchStreets($city->egonCityId, $loc->street);
-        $street = $this->selectOne($loc->street, $streets, $matchOrFail, 'street');
-        if ($street === null) {
+        try {
+            $street = $this->selectOne($loc->street, $streets, $matchOrFail, 'street');
+        } catch (AmbiguityException $e) {
             return ResolveOutcome::ambiguous('street', $streets);
+        } catch (NotFoundException $e) {
+            return ResolveOutcome::notFound('street');
         }
 
-        $hnums = $this->searchHouseNumbers($street->egonStreetId, $loc->houseNumber);
-        $hnum = $this->selectOne($loc->houseNumber, $hnums, $matchOrFail, 'housenumber');
-        if ($hnum === null) {
+        $hnums = $this->searchHouseNumbers($street?->egonStreetId, $loc->houseNumber);
+        try {
+            $hnum = $this->selectOne($loc->houseNumber, $hnums, $matchOrFail, 'housenumber');
+        } catch (AmbiguityException $e) {
             return ResolveOutcome::ambiguous('housenumber', $hnums);
+        } catch (NotFoundException $e) {
+            return ResolveOutcome::notFound('housenumber');
         }
 
         $coverage = $this->getCoverage(new CoverageParams(
@@ -148,10 +157,13 @@ class PianetaFibraCoverage
     }
 
     /** @template T of LabeledMatch
+     * @param string $expected
      * @param T[] $list
-     * @return T|null
+     * @param bool $matchOrFail
+     * @param string $scope
+     * @return LabeledMatch
      */
-    private function selectOne(string $expected, array $list, bool $matchOrFail, string $scope): ?LabeledMatch
+    private function selectOne(string $expected, array $list, bool $matchOrFail, string $scope): LabeledMatch
     {
         $normalized = $this->normalize($expected);
         $exact = array_values(array_filter($list, fn(LabeledMatch $m) => $this->normalize($m->label) === $normalized));
@@ -165,11 +177,11 @@ class PianetaFibraCoverage
             }
             throw new NotFoundException("{$scope} not found for '{$expected}'");
         }
-        if (count($exact) === 1) {
+        if (count($exact) >= 1) {
             return $exact[0];
         }
 
-        return null;
+        throw new NotFoundException("{$scope} not found for '{$expected}'");
     }
 
     private function normalize(string $s): string
