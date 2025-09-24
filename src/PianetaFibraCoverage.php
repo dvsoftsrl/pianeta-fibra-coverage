@@ -102,12 +102,10 @@ class PianetaFibraCoverage
 
     /**
      * @template T
-     * @param string $key
-     * @param callable():T[] $fetch
-     * @param bool $useCache
+     *
+     * @param  callable():T[]  $fetch
      * @return T[]
      */
-
     private function getOrFetch(string $key, callable $fetch, bool $useCache): array
     {
         $useCache = config('pianeta-fibra-coverage.use_cache', true) && $useCache;
@@ -166,16 +164,12 @@ class PianetaFibraCoverage
     }
 
     /** @template T of LabeledMatch
-     * @param string $expected
-     * @param T[] $list
-     * @param bool $matchOrFail
-     * @param string $scope
-     * @return LabeledMatch
+     * @param  T[]  $list
      */
     private function selectOne(string $expected, array $list, bool $matchOrFail, string $scope): LabeledMatch
     {
         $normalized = $this->normalize($expected);
-        $exact = array_values(array_filter($list, fn(LabeledMatch $m) => $this->normalize($m->label()) === $normalized));
+        $exact = array_values(array_filter($list, fn (LabeledMatch $m) => $this->normalize($m->label()) === $normalized));
 
         if ($matchOrFail) {
             if (count($exact) === 1) {
