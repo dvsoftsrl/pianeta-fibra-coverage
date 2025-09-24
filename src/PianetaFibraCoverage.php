@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Psr\Log\LoggerInterface;
+
 use function array_filter;
 
 class PianetaFibraCoverage
@@ -29,14 +30,12 @@ class PianetaFibraCoverage
     private const DEFAULT_BASE_URI = 'https://api.pianetafibra.it/v2/api.php';
 
     public function __construct(
-        private readonly string           $bearerToken,
-        private readonly ?string          $baseUri = self::DEFAULT_BASE_URI,
-        private readonly int              $timeoutSeconds = 10,
-        private readonly int              $maxRetries = 2,
+        private readonly string $bearerToken,
+        private readonly ?string $baseUri = self::DEFAULT_BASE_URI,
+        private readonly int $timeoutSeconds = 10,
+        private readonly int $maxRetries = 2,
         private readonly ?LoggerInterface $logger = null,
-    )
-    {
-    }
+    ) {}
 
     public function resolveCoverageFromLocation(Location $loc, CustomerType $customerType, ?bool $matchOrFail = null): ResolveOutcome
     {
@@ -93,12 +92,12 @@ class PianetaFibraCoverage
         $payload = ['endpoint' => 'city', 'city' => $city];
         $cacheKey = $this->key('city', $city);
 
-        return $this->getOrFetch($cacheKey, fn() => $this->mapCityList($this->request($payload)), $useCache);
+        return $this->getOrFetch($cacheKey, fn () => $this->mapCityList($this->request($payload)), $useCache);
     }
 
     private function key(string ...$parts): string
     {
-        return 'pf:' . implode(':', array_map(static fn($p) => strtolower(trim((string)$p)), $parts));
+        return 'pf:'.implode(':', array_map(static fn ($p) => strtolower(trim((string) $p)), $parts));
     }
 
     /**
@@ -114,7 +113,7 @@ class PianetaFibraCoverage
         $store = config('pianeta-fibra-coverage.cache_store', null);
 
         if ($useCache) {
-            return Cache::store($store)->remember($key, $ttl, fn() => $fetch());
+            return Cache::store($store)->remember($key, $ttl, fn () => $fetch());
         }
 
         return $fetch();
@@ -159,18 +158,18 @@ class PianetaFibraCoverage
             if ($status === 401 || $status === 403) {
                 throw new AuthException('Unauthorized/Forbidden');
             }
-            throw new ApiException('Server error: ' . $status);
+            throw new ApiException('Server error: '.$status);
         }
 
     }
 
     /** @template T of LabeledMatch
-     * @param T[] $list
+     * @param  T[]  $list
      */
     private function selectOne(string $expected, array $list, bool $matchOrFail, string $scope): LabeledMatch
     {
         $normalized = $this->normalize($expected);
-        $exact = array_values(array_filter($list, fn(LabeledMatch $m) => $this->normalize($m->label()) === $normalized));
+        $exact = array_values(array_filter($list, fn (LabeledMatch $m) => $this->normalize($m->label()) === $normalized));
 
         if ($matchOrFail) {
             if (count($exact) === 1) {
@@ -190,7 +189,7 @@ class PianetaFibraCoverage
 
     private function normalize(string $s): string
     {
-        return (string)Str::of($s)
+        return (string) Str::of($s)
             ->trim()
             ->replaceMatches('/\s+/', ' ')
             ->replace("'", '')
@@ -201,9 +200,9 @@ class PianetaFibraCoverage
     public function searchStreets(int $egonCityId, string $street, bool $useCache = true): array
     {
         $payload = ['endpoint' => 'address', 'id_city' => $egonCityId, 'street' => $street];
-        $cacheKey = $this->key('street', (string)$egonCityId, $street);
+        $cacheKey = $this->key('street', (string) $egonCityId, $street);
 
-        return $this->getOrFetch($cacheKey, fn() => $this->mapStreetList($this->request($payload)), $useCache);
+        return $this->getOrFetch($cacheKey, fn () => $this->mapStreetList($this->request($payload)), $useCache);
     }
 
     /** @param array $data @return StreetMatch[] */
@@ -226,9 +225,9 @@ class PianetaFibraCoverage
     public function searchHouseNumbers(int $egonStreetId, string $num, bool $useCache = true): array
     {
         $payload = ['endpoint' => 'housenumber', 'id_street' => $egonStreetId, 'num' => $num];
-        $cacheKey = $this->key('hnum', (string)$egonStreetId, $num);
+        $cacheKey = $this->key('hnum', (string) $egonStreetId, $num);
 
-        return $this->getOrFetch($cacheKey, fn() => $this->mapHouseNumberList($this->request($payload)), $useCache);
+        return $this->getOrFetch($cacheKey, fn () => $this->mapHouseNumberList($this->request($payload)), $useCache);
     }
 
     /** @param array $data @return HouseNumberMatch[] */
@@ -271,15 +270,15 @@ class PianetaFibraCoverage
     private function mapCoverage(array $data): CoverageResult
     {
         $firstData = Arr::first($data);
-        $isAvailable = (bool)($firstData['IsAvailable'] ?? false);
-        $techCode = (string)($firstData['TechnologyCode'] ?? '');
+        $isAvailable = (bool) ($firstData['IsAvailable'] ?? false);
+        $techCode = (string) ($firstData['TechnologyCode'] ?? '');
         $rawProfiles = $firstData['Coverage'] ?? [];
 
         $profiles = [];
         foreach ($rawProfiles as $p) {
             $profiles[] = new CoverageProfile(
-                type: (string)($p['type'] ?? ''),
-                url: isset($p['url']) ? (string)$p['url'] : null,
+                type: (string) ($p['type'] ?? ''),
+                url: isset($p['url']) ? (string) $p['url'] : null,
             );
         }
 
