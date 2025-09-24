@@ -8,15 +8,17 @@ final class CoverageResult
 {
     /** @param CoverageProfile[] $profiles */
     public function __construct(
-        public readonly bool $isAvailable,
+        public readonly bool   $isAvailable,
         public readonly string $technologyCode,
-        public readonly array $profiles,
-        public readonly array $raw,
-    ) {}
+        public readonly array  $profiles,
+        public readonly array  $raw,
+    )
+    {
+    }
 
     public function bestProfile(): ?CoverageProfile
     {
-        if (! $this->profiles) {
+        if (!$this->profiles) {
             return null;
         }
         $sorted = $this->profiles;
@@ -29,6 +31,6 @@ final class CoverageResult
             return [$db, $ub] <=> [$da, $ua];
         });
 
-        return $sorted[0] ?? null;
+        return $sorted[0];
     }
 }

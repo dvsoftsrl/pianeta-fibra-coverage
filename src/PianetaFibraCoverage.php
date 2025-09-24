@@ -43,6 +43,7 @@ class PianetaFibraCoverage
         $matchOrFail ??= config('pianeta-fibra-coverage.default_match_or_fail', true);
         $cities = $this->searchCities($loc->city);
         try {
+            /** @var CityMatch $city */
             $city = $this->selectOne($loc->city, $cities, $matchOrFail, 'city');
         } catch (AmbiguityException $e) {
             return ResolveOutcome::ambiguous('city', $cities);
@@ -52,6 +53,7 @@ class PianetaFibraCoverage
 
         $streets = $this->searchStreets($city->egonCityId, $loc->street);
         try {
+            /** @var StreetMatch $street */
             $street = $this->selectOne($loc->street, $streets, $matchOrFail, 'street');
         } catch (AmbiguityException $e) {
             return ResolveOutcome::ambiguous('street', $streets);
@@ -59,8 +61,9 @@ class PianetaFibraCoverage
             return ResolveOutcome::notFound('street');
         }
 
-        $hnums = $this->searchHouseNumbers($street?->egonStreetId, $loc->houseNumber);
+        $hnums = $this->searchHouseNumbers($street->egonStreetId, $loc->houseNumber);
         try {
+            /** @var HouseNumberMatch $hnum */
             $hnum = $this->selectOne($loc->houseNumber, $hnums, $matchOrFail, 'housenumber');
         } catch (AmbiguityException $e) {
             return ResolveOutcome::ambiguous('housenumber', $hnums);
@@ -98,7 +101,14 @@ class PianetaFibraCoverage
         return 'pf:' . implode(':', array_map(static fn($p) => strtolower(trim((string)$p)), $parts));
     }
 
-    /** @template T @param callable():array $fetch @return T[] */
+    /**
+     * @template T
+     * @param string $key
+     * @param callable():T[] $fetch
+     * @param bool $useCache
+     * @return T[]
+     */
+
     private function getOrFetch(string $key, callable $fetch, bool $useCache): array
     {
         $useCache = config('pianeta-fibra-coverage.use_cache', true) && $useCache;
@@ -166,7 +176,7 @@ class PianetaFibraCoverage
     private function selectOne(string $expected, array $list, bool $matchOrFail, string $scope): LabeledMatch
     {
         $normalized = $this->normalize($expected);
-        $exact = array_values(array_filter($list, fn(LabeledMatch $m) => $this->normalize($m->label) === $normalized));
+        $exact = array_values(array_filter($list, fn(LabeledMatch $m) => $this->normalize($m->label()) === $normalized));
 
         if ($matchOrFail) {
             if (count($exact) === 1) {
