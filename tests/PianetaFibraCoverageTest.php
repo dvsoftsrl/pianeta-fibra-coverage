@@ -106,11 +106,13 @@ it('resolve coverage from location', function (bool $matchOrFail) {
                 ],
             ])
             ->push([
-                'IsAvailable' => true,
-                'TechnologyCode' => 'FTTH',
-                'Coverage' => [
-                    ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
-                    ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                [
+                    'IsAvailable' => true,
+                    'TechnologyCode' => 'FTTH',
+                    'Coverage' => [
+                        ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
+                        ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                    ],
                 ],
             ])
             ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
@@ -168,11 +170,13 @@ it('fail with ambiguous cities resolving coverage', function () {
                 ],
             ])
             ->push([
-                'IsAvailable' => true,
-                'TechnologyCode' => 'FTTH',
-                'Coverage' => [
-                    ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
-                    ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                [
+                    'IsAvailable' => true,
+                    'TechnologyCode' => 'FTTH',
+                    'Coverage' => [
+                        ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
+                        ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                    ],
                 ],
             ])
             ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
@@ -212,11 +216,13 @@ it('fail with ambiguous street resolving coverage', function () {
                 ],
             ])
             ->push([
-                'IsAvailable' => true,
-                'TechnologyCode' => 'FTTH',
-                'Coverage' => [
-                    ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
-                    ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                [
+                    'IsAvailable' => true,
+                    'TechnologyCode' => 'FTTH',
+                    'Coverage' => [
+                        ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
+                        ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                    ],
                 ],
             ])
             ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
@@ -256,11 +262,13 @@ it('fail with ambiguous house number resolving coverage', function () {
                 ],
             ])
             ->push([
-                'IsAvailable' => true,
-                'TechnologyCode' => 'FTTH',
-                'Coverage' => [
-                    ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
-                    ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                [
+                    'IsAvailable' => true,
+                    'TechnologyCode' => 'FTTH',
+                    'Coverage' => [
+                        ['type' => '100/20', 'url' => 'https://fiber.example.com/ftth'],
+                        ['type' => '200/50', 'url' => 'https://fiber.example.com/ftth10'],
+                    ],
                 ],
             ])
             ->whenEmpty(Http::response(['error' => 'Troppe richieste'], 500)), // Default se supera il limite massimo di retry
@@ -330,10 +338,12 @@ it('handles retry logic correctly', function () {
 it('fetches coverage using config-based timeout and retries', function () {
     Http::fake([
         '*' => Http::response([
-            'IsAvailable' => true,
-            'TechnologyCode' => 'FTTH',
-            'Coverage' => [
-                ['type' => 'FTTH 1Gbps', 'url' => 'https://fiber.example.com/ftth'],
+            [
+                'IsAvailable' => true,
+                'TechnologyCode' => 'FTTH',
+                'Coverage' => [
+                    ['type' => 'FTTH 1Gbps', 'url' => 'https://fiber.example.com/ftth'],
+                ],
             ],
         ]),
     ]);

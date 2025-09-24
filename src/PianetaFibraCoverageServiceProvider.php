@@ -26,9 +26,12 @@ class PianetaFibraCoverageServiceProvider extends PackageServiceProvider
             $cfg = config('pianeta-fibra-coverage');
 
             $token = (string) ($cfg['token'] ?? '');
+            $logger = null;
 
             // Logger opzionale
-            $logger = $app->has(LoggerInterface::class) ? $app->make(LoggerInterface::class) : null;
+            if ($cfg['enable_logger'] ?? false) {
+                $logger = $app->has(LoggerInterface::class) ? $app->make(LoggerInterface::class) : null;
+            }
 
             return new PianetaFibraCoverage(
                 bearerToken: $token,

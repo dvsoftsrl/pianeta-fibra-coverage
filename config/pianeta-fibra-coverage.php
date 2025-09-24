@@ -22,4 +22,6 @@ return [
     // Comportamento di default per la funzione totale (puoi sempre override col parametro)
     // true => match esatto o eccezione; false => ritorna ResolveOutcome::ambiguous(...) con alternative
     'default_match_or_fail' => env('PIANETAFIBRA_MATCH_OR_FAIL', true),
+
+    'enable_logger' => env('PIANETA_FIBRA_ENABLE_LOGGER', false),
 ];
