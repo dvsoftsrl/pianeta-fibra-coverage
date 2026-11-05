@@ -1,6 +1,7 @@
 <?php
 
 use DvSoft\PianetaFibraCoverage\PianetaFibraCoverage;
+use Illuminate\Support\Facades\Config;
 use Psr\Log\LoggerInterface;
 
 it('registers the PianetaFibraCoverage singleton', function () {
@@ -20,7 +21,7 @@ it('enable/disable logger', function (bool $enabled) {
         $this->app->instance(LoggerInterface::class, $mockLogger);
     }
 
-    config()->set('pianeta-fibra-coverage.enable_logger', $enabled);
+    Config::set('pianeta-fibra-coverage.enable_logger', $enabled);
 
     $instance = app(PianetaFibraCoverage::class);
 
