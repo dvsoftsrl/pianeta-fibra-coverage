@@ -1,0 +1,12 @@
+{
+    "bootstrap-sha": "1c34aba7c3a5b2bf17e9b94593e3e8e61e6a9bea",
+    "release-type": "php",
+    "include-component-in-tag": false,
+    "include-v-in-tag": false,
+    "include-v-in-release-name": false,
+    "packages": {
+        ".": {
+            "package-name": "dvsoftsrl/pianeta-fibra-coverage"
+        }
+    }
+}
